@@ -12,12 +12,12 @@ done
 loadbalancers+=("${LOADBALANCER_HOST}=${LOADBALANCER_IP}")
 
 password_file="passwords.conf"
-password=$(grep 'GLANCE_PASSWORD' "$password_file" | cut -d'=' -f2)
+password=$(grep 'PLACEMENT_PASSWORD' "$password_file" | cut -d'=' -f2)
 
 # Create base file
 for host_info in "${hosts[@]}"; do
 	hostname="${host_info%%=*}"
-	cp ./sources/glance-api.conf ./$hostname/
+	cp ./sources/placement.conf ./$hostname/
 done
 
 # Set peer ip
@@ -25,9 +25,8 @@ for host_info in "${hosts[@]}"; do
         hostname="${host_info%%=*}"
         ip="${host_info#*=}"
 	lbhost="${loadbalancers%%=*}"
-	sed -i "s/HOSTIP/$ip/" "./$hostname/glance-api.conf"
-	sed -i "s/LBHOST/$lbhost/" "./$hostname/glance-api.conf"
-	sed -i "s/GLANCEPASSWORD/$password/" "./$hostname/glance-api.conf"
+	sed -i "s/LBHOST/$lbhost/" "./$hostname/placement.conf"
+	sed -i "s/PLACEMENTPASSWORD/$password/" "./$hostname/placement.conf"
 done
 
 modified_hosts=()
@@ -43,7 +42,7 @@ for host_info in "${hosts[@]}"; do
 	ip="${host_info#*=}"
 	hostname="${host_info%%=*}"
 	string=$(IFS=,; echo "${modified_hosts[*]}")
-	sed -i "s@MEMCACHEDSTRING@$string@" "./$hostname/glance-api.conf"
+	sed -i "s@MEMCACHEDSTRING@$string@" "./$hostname/placement.conf"
 done
 
 

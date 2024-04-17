@@ -9,3 +9,6 @@
 ./makeapachekeystone.sh
 ./makekeystone.sh
 ./makeglanceapi.sh
+./makeplacement.sh
+./makeapacheplacment.sh
+./makenova.sh

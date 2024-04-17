@@ -12,3 +12,6 @@
 ./makeplacement.sh
 ./makeapacheplacment.sh
 ./makenova.sh
+./makeneutron.sh
+./makeml2.sh
+./makeopenvswitchagent.sh

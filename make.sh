@@ -17,3 +17,4 @@
 ./makeopenvswitchagent.sh
 ./makel3agent.sh
 ./makedhcpagent.sh
+./makemetadataagent.sh

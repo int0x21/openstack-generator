@@ -15,3 +15,5 @@
 ./makeneutron.sh
 ./makeml2.sh
 ./makeopenvswitchagent.sh
+./makel3agent.sh
+./makedhcpagent.sh

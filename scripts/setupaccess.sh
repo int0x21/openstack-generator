@@ -53,4 +53,8 @@ for host_info in "${hosts[@]}"; do
         ip="${host_info#*=}"
 	scp -i $PRIVKEY -o "StrictHostKeyChecking no" $PRIVKEY "$ip:~/.ssh/"
 	scp -i $PRIVKEY -o "StrictHostKeyChecking no" $PUBKEY "$ip:~/.ssh/"
+	ssh -i $PRIVKEY -o "StrictHostKeyChecking no" $ip "sudo bash -c 'cp .ssh/id_rsa /root/.ssh/'"
+	ssh -i $PRIVKEY -o "StrictHostKeyChecking no" $ip "sudo bash -c 'cp .ssh/id_rsa.pub /root/.ssh/'"
+	ssh -i $PRIVKEY -o "StrictHostKeyChecking no" $ip "sudo bash -c 'cp .ssh/authorized_keys /root/.ssh/'"
+	ssh -i $PRIVKEY -o "StrictHostKeyChecking no" $ip "sudo bash -c 'chown root:root /root/.ssh/*'"
 done

@@ -2,7 +2,7 @@
 
 source hosts.conf
 declare -a hosts
-declare -a loadbancers
+declare -a loadbalancers
 
 for var_name in ${!HOSTNAME_*}; do
 	ip_var_name="HOSTIP${var_name#HOSTNAME}"
@@ -11,11 +11,15 @@ for var_name in ${!HOSTNAME_*}; do
 done
 loadbalancers+=("${LOADBALANCER_HOST}=${LOADBALANCER_IP}")
 
-# Create directories
+# Create base file
 for host_info in "${hosts[@]}"; do
 	hostname="${host_info%%=*}"
-	rm -rf "./$hostname"
+	cp ./sources/cinder-wsgi.conf ./$hostname/
 done
 
-rm -rf certs
-rm admin-openrc
+# Set peer ip
+for host_info in "${hosts[@]}"; do
+        hostname="${host_info%%=*}"
+        ip="${host_info#*=}"
+	sed -i "s/HOSTIP/$ip/" "./$hostname/cinder-wsgi.conf"
+done

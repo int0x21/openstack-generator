@@ -24,6 +24,10 @@ for host_info in "${hosts[@]}"; do
         if [[ "$ip" != "$myip" ]]; then
                 echo $hostname
 		scp -o "StrictHostKeyChecking no" ./$hostname/cinder.conf root@$hostname:/etc/cinder/
+		ssh -o "StrictHostKeyChecking no" "root@$ip" "bash -c 'ceph auth get-key client.cinder | tee client.cinder.key'"
+                scp -o "StrictHostKeyChecking no" ./sources/secret.xml root@$hostname
+                ssh -o "StrictHostKeyChecking no" "root@$ip" "bash -c 'virsh secret-define --file secret.xml'"
+                ssh -o "StrictHostKeyChecking no" "root@$ip" "bash -c 'virsh secret-set-value --secret 725f0095-7663-4b22-b63d-647fb1e73f89 --base64 $(cat client.cinder.key) && rm client.cinder.key secret.xml'"
                 ssh -o "StrictHostKeyChecking no" "root@$ip" "bash -c 'systemctl restart nova-api'"
                 ssh -o "StrictHostKeyChecking no" "root@$ip" "bash -c 'systemctl restart cinder-scheduler'"
                 ssh -o "StrictHostKeyChecking no" "root@$ip" "bash -c 'systemctl restart cinder-volume'"
@@ -38,6 +42,10 @@ for host_info in "${hosts[@]}"; do
 		ssh -o "StrictHostKeyChecking no" "root@$ip" "openstack --os-username admin --os-password $keystonepassword --os-project-name admin --os-user-domain-name Default --os-project-domain-name Default --os-auth-url https://$lb:5000/v3 --os-identity-api-version 3 --os-image-api-version 2 endpoint create --region RegionOne volumev3 internal https://$lb:8776/v3/%\(project_id\)s"
 		ssh -o "StrictHostKeyChecking no" "root@$ip" "openstack --os-username admin --os-password $keystonepassword --os-project-name admin --os-user-domain-name Default --os-project-domain-name Default --os-auth-url https://$lb:5000/v3 --os-identity-api-version 3 --os-image-api-version 2 endpoint create --region RegionOne volumev3 admin https://$lb:8776/v3/%\(project_id\)s"
 		scp -o "StrictHostKeyChecking no" ./$hostname/cinder.conf root@$hostname:/etc/cinder/
+		ssh -o "StrictHostKeyChecking no" "root@$ip" "bash -c 'ceph auth get-key client.cinder | tee client.cinder.key'"
+		scp -o "StrictHostKeyChecking no" ./sources/secret.xml root@$hostname
+		ssh -o "StrictHostKeyChecking no" "root@$ip" "bash -c 'virsh secret-define --file secret.xml'"
+		ssh -o "StrictHostKeyChecking no" "root@$ip" "bash -c 'virsh secret-set-value --secret 725f0095-7663-4b22-b63d-647fb1e73f89 --base64 $(cat client.cinder.key) && rm client.cinder.key secret.xml'"
 		ssh -o "StrictHostKeyChecking no" "root@$ip" 'su -s /bin/sh -c "cinder-manage db sync" cinder'
 		ssh -o "StrictHostKeyChecking no" "root@$ip" "bash -c 'systemctl restart nova-api'"
 		ssh -o "StrictHostKeyChecking no" "root@$ip" "bash -c 'systemctl restart cinder-scheduler'"
